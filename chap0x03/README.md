@@ -117,7 +117,7 @@
 
   * 在vmware中添加共享文件夹
 
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\vmware_setting.png)
+    ![](.\IMG\check_list\vmware_setting.png)
 
     ```
     sudo mkdir /mnt/hgfs //在mnt目录下创建hgfs文件夹
@@ -129,11 +129,11 @@
 
   * 在/etc/fstab中添加一行代码,以实现开机自动挂载
 
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\modify_fstab.png)
+    ![](.\IMG\check_list\modify_fstab.png)
 
   * 重启系统验证:
 
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\check_mount.png)
+    ![](.\IMG\check_list\check_mount.png)
 
 * #### 基于LVM（逻辑分卷管理）的分区如何实现动态扩容和缩减容量？
 
@@ -143,22 +143,22 @@
 
   * 使用`sudo fdisk /dev/sdb`、`sudo fdisk /dev/sdc`对sdb、sdc磁盘进行分区处理，并将sdb3的extend类型转换成Linux类型
 
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\partition_disk.png)
+    ![](.\IMG\check_list\partition_disk.png)
 
   * 对sdb创建pv和vg
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\sdb_pv_vg.png)
+    ![](.\IMG\check_list\sdb_pv_vg.png)
 
   * 对sdc创建pv并加入到相同的vg中
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\sdc_pv_vg.png)
+    ![](.\IMG\check_list\sdc_pv_vg.png)
 
   * 创建一个10G大小的lv
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\lv_create_10G.png)
+    ![](.\IMG\check_list\lv_create_10G.png)
 
   * 将剩余的vg容量都分配给lv
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\lv_create_100%free.png)
+    ![](.\IMG\check_list\lv_create_100%free.png)
 
   * 创建文件系统并挂载到指定目录
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\mount_lv.png)
+    ![](.\IMG\check_list\mount_lv.png)
 
 * #### 如何通过 systemd 设置实现在网络连通时运行一个指定脚本，在网络断开时运行另一个脚本？
 
@@ -179,7 +179,7 @@
     ```
 
     输入`sudo systemctl daemon-reload`加载配置文件，再输入`sudo systemctl start test.service`启动服务
-    ![](C:\Users\14377\Desktop\学习\linux\2022-linux-public-KarsaSRBG\chap0x03\IMG\check_list\networkTest_status.png)
+    ![](.\IMG\check_list\networkTest_status.png)
 
     
 
@@ -206,9 +206,11 @@
   Failed to set time: Automatic time synchronization is enabled
   
   * 解决方法：由于timedatectl自带ntp可以与ntp服务器同步来实现自动更新时间，在ntp开启的状态下我们不能手动修改时间参数，如果需要手动修改就必须把ntp关闭
+    
+    
     ![](./IMG/solution_timedatectl.png)
     使用如下代码可以关闭ntp
-  
+    
     ```
     timedatectl set-ntp false
     ```
