@@ -43,7 +43,7 @@
     [<img src="https://asciinema.org/a/b3uqPpZYEBkOHUVBoL6k6zBEa.svg" alt="asciicast" style="zoom:50%;" />](https://asciinema.org/a/b3uqPpZYEBkOHUVBoL6k6zBEa)
 
   * 启动顺序与依赖关系(以debug-shell.service为例)
-    ![](.\IMG\unit_debug-shell_conf.png)
+    ![](./IMG/unit_debug-shell_conf.png)
     在Unit区块中不存在After和before字段，说明debug-shell不存在与其他unit的启动顺序，wants和requires字段缺省，表示debug-shell与其他unit不存在依赖关系
 
   * 启动行为、重启行为、install区块(以ssh.service为例)
@@ -82,7 +82,7 @@
   getent group sudo//显示带sudo权限的用户
   ```
 
-  ![](.\IMG\check_list\check_if_sudo.png)
+  ![](./IMG/check_list/check_if_sudo.png)
 
 * #### 如何将一个用户添加到一个用户组？
 
@@ -92,7 +92,7 @@
   groups usr//查询用户所在用户组
   ```
 
-  ![](.\IMG\check_list\add_group.png)
+  ![](./IMG/check_list/add_group.png)
 
 * #### 如何查看当前系统的分区表和文件系统详细信息？
 
@@ -103,21 +103,21 @@
 
   分区列表：
 
-  ![](.\IMG\check_list\fdisk.png)
+  ![](./IMG/check_list/fdisk.png)
 
   文件系统详细信息：
 
-  ![](.\IMG\check_list\lsblk.png)
+  ![](./IMG/check_list/lsblk.png)
 
 * #### 如何实现开机自动挂载VMware的共享目录分区？
 
   * 在本地创建测试文件
 
-    ![](.\IMG\check_list\local_test.png)
+    ![](./IMG/check_list/local_test.png)
 
   * 在vmware中添加共享文件夹
 
-    ![](.\IMG\check_list\vmware_setting.png)
+    ![](./IMG/check_list/vmware_setting.png)
 
     ```
     sudo mkdir /mnt/hgfs //在mnt目录下创建hgfs文件夹
@@ -125,40 +125,40 @@
     ls /mnt/hgfs //查找共享文件
     ```
 
-    ![](.\IMG\check_list\share_to_ubuntu.png)
+    ![](./IMG/check_list/share_to_ubuntu.png)
 
   * 在/etc/fstab中添加一行代码,以实现开机自动挂载
 
-    ![](.\IMG\check_list\modify_fstab.png)
+    ![](./IMG/check_list/modify_fstab.png)
 
   * 重启系统验证:
 
-    ![](.\IMG\check_list\check_mount.png)
+    ![](./IMG/check_list/check_mount.png)
 
 * #### 基于LVM（逻辑分卷管理）的分区如何实现动态扩容和缩减容量？
 
   * 在VMware选项中创建一个20G大小的新虚拟硬盘
 
-    ![](.\IMG\check_list\new_disk.png)
+    ![](./IMG/check_list/new_disk.png)
 
   * 使用`sudo fdisk /dev/sdb`、`sudo fdisk /dev/sdc`对sdb、sdc磁盘进行分区处理，并将sdb3的extend类型转换成Linux类型
 
-    ![](.\IMG\check_list\partition_disk.png)
+    ![](./IMG/check_list/partition_disk.png)
 
   * 对sdb创建pv和vg
-    ![](.\IMG\check_list\sdb_pv_vg.png)
+    ![](./IMG/check_list/sdb_pv_vg.png)
 
   * 对sdc创建pv并加入到相同的vg中
-    ![](.\IMG\check_list\sdc_pv_vg.png)
+    ![](./IMG/check_list/sdc_pv_vg.png)
 
   * 创建一个10G大小的lv
-    ![](.\IMG\check_list\lv_create_10G.png)
+    ![](./IMG/check_list/lv_create_10G.png)
 
   * 将剩余的vg容量都分配给lv
-    ![](.\IMG\check_list\lv_create_100%free.png)
+    ![](./IMG/check_list/lv_create_100%free.png)
 
   * 创建文件系统并挂载到指定目录
-    ![](.\IMG\check_list\mount_lv.png)
+    ![](./IMG/check_list/mount_lv.png)
 
 * #### 如何通过 systemd 设置实现在网络连通时运行一个指定脚本，在网络断开时运行另一个脚本？
 
@@ -179,7 +179,7 @@
     ```
 
     输入`sudo systemctl daemon-reload`加载配置文件，再输入`sudo systemctl start test.service`启动服务
-    ![](.\IMG\check_list\networkTest_status.png)
+    ![](./IMG/check_list/networkTest_status.png)
 
     
 
@@ -206,7 +206,6 @@
   Failed to set time: Automatic time synchronization is enabled
   
   * 解决方法：因为timedatectl自带ntp可以与ntp服务器同步来实现自动更新时间，在ntp开启的状态下我们不能手动修改时间参数，如果需要手动修改就必须把ntp关闭
-    
     
     ![](./IMG/solution_timedatectl.png)
     使用如下代码可以关闭ntp
