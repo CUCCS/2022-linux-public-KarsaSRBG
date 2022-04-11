@@ -205,7 +205,7 @@
 * 在使用timedatectl更改时间日期时报错：
   Failed to set time: Automatic time synchronization is enabled
   
-  * 解决方法：由于timedatectl自带ntp可以与ntp服务器同步来实现自动更新时间，在ntp开启的状态下我们不能手动修改时间参数，如果需要手动修改就必须把ntp关闭
+  * 解决方法：因为timedatectl自带ntp可以与ntp服务器同步来实现自动更新时间，在ntp开启的状态下我们不能手动修改时间参数，如果需要手动修改就必须把ntp关闭
     
     
     ![](./IMG/solution_timedatectl.png)
