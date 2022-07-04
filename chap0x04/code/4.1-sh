@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+function help(){
+	cat << EOF
+	[Help] -h                  查询帮助信息。
+ 
+	       -c quality         压缩jpg文件,quality取值为0-100(图片质量)。
+	       -r num             对jpeg/png/svg格式图片在保持原始宽高比的前提下压缩分辨率，num取值为0-100。
+	       -m text            对图片批量添加自定义文本水印，text为嵌入水印文本内容。
+	       -n prename         添加文件名前缀，prename为添加得名称前缀。
+	       -b suffixname      添加文件名后缀，text为添加的名称后缀。
+               -t                  将png/svg图片统一转换为jpg格式。
+EOF
+}
+function compress {
+	quality="$1"
+	for image in *;do
+		typ=${image##*.}
+		if [[ "${typ}" != "jpg" ]];then
+			continue
+		else
+			convert -quality ${quality}"%" ${image} ${image}
+			echo "${image} Compress completed"
+		fi
+	done
+}
+
+function compressed_resolution {
+	  resolution=$1
+	  for img in *;do
+		typ=${img##*.}
+		if [[ $typ == "jpg"  || $typ == "png" || $typ == "svg" ]]  ;then
+			#实现压缩分辨率
+			convert -sample $resolution"%x"$resolution"%" $img $img
+			echo ${img}" resize completed"
+		fi
+
+	  done
+
+}
+function watermark {
+	  text="$1"
+	  for img in *;do
+		  typ=${img##*.}
+		  if [[ ${typ} == "jpg" || ${typ} == "png" || ${typ} == "svg" ]] ;then
+			  convert -fill grey -gravity NorthWest -draw "text 40,40 ${text}" ${img} ${img}
+			  echo ${img}" watermark added"
+		  fi
+	  done
+
+function add_prename {
+	  new=$1
+	  for img in `ls $dir`;do
+		  typ=${img##*.}
+		  if [[ $typ == "jpg" || $typ == "png" || $typ == "svg" ]];then
+			  out=${new}_${img}
+			  convert $img $out
+			  echo ${img}" prename added"
+
+		  fi
+	  done
+}
+function add_suffixname {
+          new=$1
+          for img in `ls $dir`;do
+                  typ=${img##*.}
+                  if [[ $typ == "jpg" || $typ == "png" || $typ == "svg" ]];then
+                          out=${img%%.*}_${new}.${img##*.}
+                          convert $img $out
+                          echo ${img}" suffix name added"
+
+                  fi
+          done
+}
+function trans_format {
+	for img in *;do
+		typ=${img##*.}
+		if [[ $typ == "png" || $typ == "svg" ]] ;then
+			out=${img%%.*}.jpg
+			convert ${img} ${out}
+			echo "format converted"
+		fi
+	done
+}
+while [[ "$#" -ne 0 ]]; do
+	 case $1 in
+	      	 "-c")   compress $2
+			 shift 2;;
+		 "-r")   compressed_resolution $2
+			 shift 2;;
+		 "-h")   help
+			 shift;;
+		 "-m")   watermark $2
+			 shift 2;;
+		 "-t")   trans_format
+			 shift;;
+		 "-n")   add_prename $2
+			 shift 2;;
+		 "-b")	 add_suffixname $2
+			 shift 2;;
+	esac
+done
