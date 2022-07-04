@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+
+
+function host {
+	echo "主机TOP 100和分别对应出现的总次数"
+	printf "\n"
+	echo "   次数  时间"
+	cat ./web_log.tsv | awk -F "\t" '{if (NR > 1) {print $1} }' | sort | uniq -c | sort -nr | head -100
+	printf "\n"
+}
+
+
+function IP {
+	echo "主机TOP 100 IP和分别对应出现的总次数"
+	printf "\n"
+	echo "   次数  IP"
+	cat ./web_log.tsv | awk -F "\t" '{if (NR > 1) {print $1} }' | grep -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | sort | uniq -c | sort -nr | head -100
+	printf "\n"
+}
+
+function url {
+	echo "最频繁被访问的URL TOP 100"
+	printf "\n"
+	echo "   次数  URL"
+	cat ./web_log.tsv | awk -F "\t" '{if (NR > 1) {print $5} }' | sort | uniq -c | sort -nr | head -100
+	printf "\n"
+}
+
+
+function four {
+	echo "统计不同4XX状态码对应的TOP 10 URL和对应出现的总次数"
+	printf "\n"
+	echo "Response 403"
+	echo "   次数	URL"
+	cat ./web_log.tsv | awk -F "\t" '{ if ($6=="403") {print $5} }' | sort | uniq -c | sort -nr | head -10
+	printf "\n"
+	echo "Response 404"
+	echo "   次数	URL"
+	cat ./web_log.tsv | awk -F "\t" '{ if ($6=="404") {print $5} }' | sort | uniq -c | sort -nr | head -10
+	printf "\n"
+}
+
+
+function SpeURL {
+	URL="$1"
+	echo ${URL} "TOP 100访问来源主机"
+	echo "   次数  主机"
+	cat ./web_log.tsv | awk -F "\t" '{ if ($5=="'$URL'") {print $1} }' | sort | uniq -c | sort -nr | head -100
+}
+
+
+function StaticticalRes {
+       
+	echo "不同响应状态码的出现次数和对应百分比"
+	printf "\n"
+       	arr=$(awk -F "\t" '{if (NR > 1) {print $6} }' ./web_log.tsv ) #获得响应码数组
+        declare -A a 
+
+        count=0
+
+	#统计不同响应状态码的出现次数
+        for co in ${arr[@]};do
+                if [[ ${a[$co]} ]];then
+                        a[$co]=$((a[$co]+1))
+                else
+                        a[$co]=1
+                fi
+                count=$((count+1))
+        done
+
+        echo "不同响应状态码的出现次数和百分比"
+        for key in ${!a[@]};do
+                echo "$key      ${a[$key]}      $(echo "${a[$key]} $count" | awk '{printf("%0.5f\n",$1/$2*100)}')%"
+        done
+ 	printf "\n"
+
+}
+
+
+function help {
+	echo "the options:"
+        echo "-a:统计访问来源主机TOP 100和分别对应出现的总次数"
+        echo "-b:统计访问来源主机TOP 100 IP和分别对应出现的总次数"
+        echo "-c:统计最频繁被访问的URL TOP 100"
+        echo "-d:统计不同响应状态码的出现次数和对应百分比"
+        echo "-e:分别统计不同4XX状态码对应的TOP 10 URL和对应出现的总次数"
+        echo "-s:给定URL输出TOP 100访问来源主机"
+}
+
+if [[ $# -lt 1 ]];then
+        echo "Please enter your command."
+else
+        while [[ $# -ne 0 ]];do
+                case $1 in
+                        "-a")
+                                host #统计访问来源主机TOP 100和分别对应出现的总次数
+                                shift
+                                ;;
+                        "-h")
+                                help #获得命令行不同参数帮助信息
+                                shift
+                                ;;
+                        "-b")
+                                IP #统计访问来源主机TOP 100 IP和分别对应出现的总次数
+                                shift
+                                ;;
+                        "-c")
+                                url #统计最频繁被访问的URL TOP 100
+                                shift
+                                ;;
+                        "-d")
+                                StaticticalRes #统计不同响应状态码的出现次数和对应百分比
+                                shift
+                                ;;
+                        "-e")
+                                four #分别统计不同4XX状态码对应的TOP 10 URL和对应出现的总次数
+                                shift
+				;;
+			"-s")
+				SpeURL $2 #给定URL输出TOP 100访问来源主机
+				shift 2
+				;;
+                esac
+        done
+fi

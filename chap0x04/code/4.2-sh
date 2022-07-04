@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+
+export LANG=C.UTF-8
+
+function help()
+{
+cat <<EOF
+Usage: bash 4.2-sh [-option]
+[option]:
+	-a	统计不同年龄区间范围（20岁以下、[20-30]、30岁以上）的球员数量、百分比
+	-p	统计不同场上位置的球员数量、百分比
+	-l	名字最长的球员是谁？名字最短的球员是谁？
+	-f	年龄最大的球员是谁？年龄最小的球员是谁？	
+EOF
+}
+
+function countByAge()
+{
+	count_player=0
+	ageRange_20=0
+	ageRange_20_30=0
+	ageRange_30=0
+	for n in $(awk -F '\t' '{print $6}' ./worldcupplayerinfo.tsv);do
+		if [[ $n != "Age" ]];
+		then
+			count_player=$((count_player+1))
+			if [[ $n -lt 20 ]];
+		        then
+            			ageRange_20=$((ageRange_20+1))
+        		fi
+        		if [[ $n -ge 20 && $n -le 30 ]];
+        		then
+            			ageRange_20_30=$((ageRange_20_30+1))
+        		fi
+        		if [[ $n -gt 30 ]];
+        		then
+            			ageRange_30=$((ageRange_30+1))
+		        fi
+		fi
+	done
+	echo "年龄在20岁以下的数量:$ageRange_20,占比:$(echo "scale=2; $ageRange_20*100/$count_player" | bc) %"
+	echo "-------------------------------------------"
+	echo "年龄在20-30岁的数量:$ageRange_20_30,占比:$(echo "scale=2; $ageRange_20_30*100/$count_player" | bc) %"
+	echo "-------------------------------------------"
+	echo "年龄在20-30岁的数量:$ageRange_30,占比:$(echo "scale=2; $ageRange_30*100/$count_player" | bc) %"
+
+
+}
+
+function countByPosition()
+{	
+	count_player=0
+	declare -A position
+	positions=$(awk -F "\t" '{if (NR > 1) {print $5} }' ./worldcupplayerinfo.tsv)
+	for n in ${positions[@]};do
+		if [[ "$n" != "Position" ]];
+		then
+			if [[ "$n" != "" ]];
+        		then
+				if [[ ${position[$n]} ]];then
+					position[$n]=$((position[$n]+1))
+					count_player=$((count_player+1))
+				else
+					position[$n]=1
+				fi
+        		fi
+		fi
+	done
+	for key in "${!position[@]}";do
+    		echo "${key} 占比 $(echo "scale=2; ${position[$key]}*100/$count_player" | bc) %"
+	done
+
+}
+function searchName_age()
+{
+	min=100
+	max=0	
+	age=$(awk -F "\t" '{if (NR > 1) {print $6} }' ./worldcupplayerinfo.tsv)
+
+	for i in ${age[@]};do
+		if [[ "$i" != "Age" ]];
+		then
+			if [[ $i -gt $max ]];
+                        then
+                                max=$i
+                        fi
+                        if [[ $i -lt $min ]];
+                        then
+                                min=$i
+                        fi
+
+
+		fi
+	done
+	max_name=$(awk -F "\t" '$6=='$max' {print $9}' ./worldcupplayerinfo.tsv )
+        min_name=$(awk -F "\t" '$6=='$min' {print $9}' ./worldcupplayerinfo.tsv )
+        echo "年龄最大的球员的名字是 $max_name"
+        echo "年龄最小的球员的名字是 $min_name"
+
+
+}
+function searchName_len()
+{
+	OLD_IFS="$IFS"
+	min_len=50
+	max_len=0
+	names=$(awk -F "\t" '{if (NR > 1) {print $9","} }' ./worldcupplayerinfo.tsv)
+	IFS=","
+	name=($names)
+	IFS="$OLD_IFS"
+
+        for n in ${name[@]};do
+                if [[ "$n" != "Player" ]];
+                then
+			if [[ "$n" != "" ]];
+			then
+                        	if [[ ${max_len} -lt ${#n} ]];
+                        	then
+					max_len=${#n}
+                        	fi
+                        	if [[ ${min_len} -gt ${#n} ]];
+                        	then
+					min_len=${#n}
+                        	fi
+                	fi
+		fi
+        done	
+
+	 echo 名字长度最大的球员的名字是
+	for n in "${name[@]}";do
+		if [[ ${#n} -eq $max_len ]];then
+			echo "$n"
+
+
+		fi
+	done
+
+	 echo 名字长度最短的球员的名字是
+        for n in "${name[@]}";do
+                if [[ ${#n} -eq ${min_len} ]];then
+                        echo "$n"
+
+
+                fi
+        done
+
+}
+while getopts 'apflh' OPT; do
+    case $OPT in
+        a)
+            countByAge;;
+        p)
+            countByPosition;;
+        f)
+            searchName_age;;
+        l)
+            searchName_len
+	    shift;;
+        h | *)
+            help;;
+    esac
+done
